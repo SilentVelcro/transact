@@ -1,8 +1,5 @@
-import { Component } from 'react'
+export const Layout: React.FC = ({children}) => {
 
-export class Layout extends Component {
-  props: any
-  render() {
     return (
       <div
         style={{
@@ -13,8 +10,8 @@ export class Layout extends Component {
           flexDirection: 'column',
         }}
       >
-        {this.props.children}
+        {children}
       </div>
     )
-  }
+
 }

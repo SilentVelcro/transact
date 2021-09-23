@@ -1,14 +1,13 @@
-import { Component } from 'react'
 import { TransactionsProps } from '../types'
 
-export class Transactions extends Component<TransactionsProps> {
-  render() {
-    if (!this.props.transactions) {
+export const Transactions: React.FC<TransactionsProps> = ({transactions}) => {
+ 
+    if (!transactions) {
       return <div>Loading...</div>
     }
     return (
       <div style={{ display: 'grid', gap: '20px' }}>
-        {this.props.transactions.map((transaction: any, index: number) => (
+        {transactions.map((transaction: any, index: number) => (
           <div
             style={{
               display: 'grid',
@@ -43,5 +42,4 @@ export class Transactions extends Component<TransactionsProps> {
         ))}
       </div>
     )
-  }
 }
