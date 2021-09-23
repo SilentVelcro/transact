@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { localAuth } from './auth'
 import Login from './auth/Login'
@@ -15,53 +15,56 @@ const initialState = {
   authError: false,
 }
 
-class App extends React.Component<{}, AppState> {
-  constructor(props: {}) {
-    super(props)
-    this.state = initialState
-    this.loadData = this.loadData.bind(this)
-    this.signOut = this.signOut.bind(this)
+const App:React.FC<{}> = () => {
+  const [appState, setAppState] = useState<AppState>(initialState)
+
+  const signOut = () => {
+    setAppState(initialState)
   }
 
-  signOut() {
-    this.setState(initialState)
-  }
-
-  loadData() {
-    this.setState({
-      ...this.state,
+  const loadData = () => {
+    setAppState({
       loggedIn: true,
+      authError: false,
       data: sampleData,
     })
   }
 
-  async componentWillMount() {
-    if (!this.state.authError) {
-      if (await localAuth(this.loadData)) {
-        this.setState({ ...this.state, loggedIn: true })
-      } else {
-        this.setState({ ...this.state, authError: true })
+  useEffect(() => {
+    const checkLocalAuth = async () => {
+      const authFailed = appState.authError
+
+      if (!authFailed) {
+        const localAuthSucceeded = await localAuth(loadData)
+
+        if (localAuthSucceeded) {
+          setAppState({ ...appState, loggedIn: true })
+        } else {
+          setAppState({ ...appState, authError: true })
+        }
       }
     }
-  }
 
-  render() {
-    if (this.state.loggedIn) {
+    checkLocalAuth()
+  }, [])
+  
+    if (appState.loggedIn) {
       return (
+        // Add 'Sign out' button
         <Layout>
           <h1>Recent Transactions</h1>
-          <Transactions transactions={this.state.data} />
+          <Transactions transactions={appState.data} />
         </Layout>
       )
     } else {
       return (
         <Layout>
           <h1>Check Recent Transactions</h1>
-          <Login onSignIn={this.loadData} />
+          <Login onSignIn={loadData} />
         </Layout>
       )
     }
-  }
+
 }
 
 export default App
